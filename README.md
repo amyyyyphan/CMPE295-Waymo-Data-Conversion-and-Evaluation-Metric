@@ -91,7 +91,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 ```
 
 
-### For converting a small amount of data:
+### For converting a very small amount of data:
 1. Enable GPU
 ```
 srun -p gpu --gres=gpu -n 1 -N 1 -c 4 --pty /bin/bash
@@ -151,7 +151,7 @@ You may run into the following errors. Install the necessary libraries and corre
     ```
 
 
-### For converting a large amount of data
+### For converting a larger amount of data
 Make sure that the required libraries and versions are installed before using this (look at the section for converting a small amount of data).
 
 1. Create a file called conversion.sh in the mmdetection3d directory. Copy this into the file, replacing <email> with your email and <SJSU ID> with your student ID. You may have to make additional changes if you use a different CUDA version or a different name for your conda environment.
