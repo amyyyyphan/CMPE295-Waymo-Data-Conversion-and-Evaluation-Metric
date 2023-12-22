@@ -218,17 +218,15 @@ pip uninstall open3d-python
 
 2. Make changes to config files
 
-I had to make some changes to the config files for pgd due to `CUDA out of memory` error. I also made some changes to the config file for the waymo dataset. I included the config file for the waymo dataset and pgd that worked for me. Changes I made:
+    I had to make some changes to the config files for pgd due to `CUDA out of memory` error. I also made some changes to the config file for the waymo dataset. I included the config file for the waymo dataset and pgd that worked for me. Changes I made:
 
     mmdetection3d/configs/_base_/datasets/waymoD5-fov-mono3d-3class.py:
-
     - Changed `backend_args = None` to `backend_args = {}` to fix an error
     - Decreased the batch_size and num_workers to 2 for train_dataloader
     - Changed the ground truth .bin file name in the waymo_bin_file path in val_evaluator. I am currently using the ground truth .bin file from v1.2 [here](https://console.cloud.google.com/storage/browser/waymo_open_dataset_v_1_2_0/validation/ground_truth_objects)
     - Added vis_backends and visualizer
 
     mmdetection3d/configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.py:
-
     - Added default_hooks for logging and saving checkpoints
     - Changed val_interval to 4
     - Reduced base_batch_size to 4
