@@ -207,3 +207,53 @@ mmdetection3d
 │   │   │   ├── waymo_infos_val.pkl
 │   │   ├── waymo_format
 ```
+
+
+# Instructions for training
+
+1. Uninstall open3d-python to fix `undefined symbol: _Py_ZeroStruct` error
+```
+pip uninstall open3d-python
+```
+
+2. Make changes to config files
+
+I had to make some changes to the config files for pgd due to `CUDA out of memory` error. I also made some changes to the config file for the waymo dataset. I included the config file for the waymo dataset and pgd that worked for me. Changes I made:
+
+    mmdetection3d/configs/_base_/datasets/waymoD5-fov-mono3d-3class.py:
+
+    - Changed `backend_args = None` to `backend_args = {}` to fix an error
+    - Decreased the batch_size and num_workers to 2 for train_dataloader
+    - Changed the ground truth .bin file name in the waymo_bin_file path in val_evaluator. I am currently using the ground truth .bin file from v1.2 [here](https://console.cloud.google.com/storage/browser/waymo_open_dataset_v_1_2_0/validation/ground_truth_objects)
+    - Added vis_backends and visualizer
+
+    mmdetection3d/configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.py:
+
+    - Added default_hooks for logging and saving checkpoints
+    - Changed val_interval to 4
+    - Reduced base_batch_size to 4
+    - Added `resume = True` to resume training. If you want to resume training from a specific checkpoint, add `load_from = path/to/checkpoint`
+
+3. Copy the compiled `compute_detection_let_metrics_main` file (provided in the shared Google Drive) into `mmdetection3d/mmdet3d/evaluation/functional/waymo_utils/`
+
+4. Train model
+```
+python tools/train.py configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-mv-mono3d.py
+```
+
+
+# Demo
+You can use the provided sample image data to test the model:
+```
+python demo/mono_det_demo.py demo/data/kitti/000008.png demo/data/kitti/000008.pkl configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.py work_dirs/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d/epoch_24.pth --out-dir demo/
+```
+
+The result will be saved under demo/vis_camera/CAM2
+
+
+# Evaluation
+```
+python tools/test.py configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.py work_dirs/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d/epoch_24.pth --work-dir evaluation_results/ --show-dir evaluation_results_images/ --task mono_det
+```
+
+The results and images will be saved under evaluation_results
