@@ -236,7 +236,7 @@ pip uninstall open3d-python
 
 4. Train model
 ```
-python tools/train.py configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-mv-mono3d.py
+python tools/train.py configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.py
 ```
 
 
