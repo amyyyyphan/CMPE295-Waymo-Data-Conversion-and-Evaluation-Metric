@@ -5,7 +5,7 @@ _base_ = [
 ]
 
 # load_from = 'work_dirs/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d/epoch_11.pth'
-resume = True
+# resume = True
 
 # model settings
 model = dict(
@@ -112,9 +112,9 @@ param_scheduler = [
 
 default_hooks = dict(
     logger=dict(type='LoggerHook', interval=1),
-    checkpoint=dict(type='CheckpointHook', interval=4))
+    checkpoint=dict(type='CheckpointHook', interval=1, max_keep_ckpts=5))
 
-train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=48, val_interval=4)
+train_cfg = dict(type='EpochBasedTrainLoop', max_epochs=120, val_interval=4)
 val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')
-auto_scale_lr = dict(base_batch_size=4)
+auto_scale_lr = dict(base_batch_size=8)

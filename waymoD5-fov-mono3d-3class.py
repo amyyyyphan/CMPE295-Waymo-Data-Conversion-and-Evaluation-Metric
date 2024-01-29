@@ -33,12 +33,13 @@ train_pipeline = [
         with_label_3d=True,
         with_bbox_depth=True),
     # base shape (1248, 832), scale (0.95, 1.05)
-    dict(
-        type='RandomResize3D',
-        scale=(1284, 832),
-        ratio_range=(0.95, 1.05),
-        keep_ratio=True,
-    ),
+    # dict(
+    #     type='RandomResize3D',
+    #     scale=(1284, 832),
+    #     ratio_range=(0.95, 1.05),
+    #     keep_ratio=True,
+    # ),
+    dict(type='mmdet.Resize', scale_factor=1.0),
     dict(type='RandomFlip3D', flip_ratio_bev_horizontal=0.5),
     dict(
         type='Pack3DDetInputs',
@@ -50,30 +51,32 @@ train_pipeline = [
 
 test_pipeline = [
     dict(type='LoadImageFromFileMono3D', backend_args=backend_args),
-    dict(
-        type='RandomResize3D',
-        scale=(1248, 832),
-        ratio_range=(1., 1.),
-        keep_ratio=True),
+    # dict(
+    #     type='RandomResize3D',
+    #     scale=(1248, 832),
+    #     ratio_range=(1., 1.),
+    #     keep_ratio=True),
+    dict(type='mmdet.Resize', scale_factor=1.0),
     dict(type='Pack3DDetInputs', keys=['img']),
 ]
 # construct a pipeline for data and gt loading in show function
 # please keep its loading function consistent with test_pipeline (e.g. client)
 eval_pipeline = [
     dict(type='LoadImageFromFileMono3D', backend_args=backend_args),
-    dict(
-        type='RandomResize3D',
-        scale=(1248, 832),
-        ratio_range=(1., 1.),
-        keep_ratio=True),
+    # dict(
+    #     type='RandomResize3D',
+    #     scale=(1248, 832),
+    #     ratio_range=(1., 1.),
+    #     keep_ratio=True),
+    dict(type='mmdet.Resize', scale_factor=1.0),
     dict(type='Pack3DDetInputs', keys=['img']),
 ]
 
 metainfo = dict(CLASSES=class_names)
 
 train_dataloader = dict(
-    batch_size=2,
-    num_workers=2,
+    batch_size=1,
+    num_workers=1,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
@@ -156,7 +159,7 @@ test_dataloader = dict(
 val_evaluator = dict(
     type='WaymoMetric',
     ann_file='./data/waymo/kitti_format/waymo_infos_val.pkl',
-    waymo_bin_file='./data/waymo/waymo_format/validation_ground_truth_objects_gt.bin',
+    waymo_bin_file='./data/waymo/waymo_format/fov_gt.bin',
     data_root='./data/waymo/waymo_format',
     metric='LET_mAP',
     load_type='fov_image_based',
