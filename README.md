@@ -255,3 +255,28 @@ python tools/test.py configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.
 ```
 
 The results and images will be saved under evaluation_results
+
+# Instructions to build the binary file `compute_detection_let_metrics_main`
+
+## References
+* [Instructions provided by MMDetection3D for evaluation on Waymo](https://github.com/open-mmlab/mmdetection3d/blob/main/docs/en/advanced_guides/datasets/waymo.md#evaluation)
+
+* [Instructions to install Bazel](https://bazel.build/install/ubuntu#binary-installer)
+
+```
+# download the code and enter the base directory
+git clone https://github.com/waymo-research/waymo-open-dataset.git waymo-od
+cd waymo-od
+git checkout remotes/origin/master
+
+# install bazel
+wget https://github.com/bazelbuild/bazel/releases/download/5.4.0/bazel-5.4.0-installer-linux-x86_64.sh
+chmod +x bazel-5.4.0-installer-linux-x86_64.sh
+./bazel-5.4.0-installer-linux-x86_64.sh --user
+
+# delete previous bazel outputs and reset internal caches
+bazel clean
+
+bazel build waymo_open_dataset/metrics/tools/compute_detection_let_metrics_main
+cp bazel-bin/waymo_open_dataset/metrics/tools/compute_detection_let_metrics_main ../../mmdetection3d/mmdet3d/evaluation/functional/waymo_utils/
+```
