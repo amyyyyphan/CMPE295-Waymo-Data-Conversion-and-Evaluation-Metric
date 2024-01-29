@@ -213,14 +213,20 @@ mmdetection3d
 pip uninstall open3d-python
 ```
 
-2. Make changes to config files
+2. Generate ground truth bin file
+Copy the `create_waymo_gt_bin.py` from [here](https://github.com/Tai-Wang/Depth-from-Motion/blob/main/tools/create_waymo_gt_bin.py) into the tools folder under the MMDetection3D directory. Then change the output file name to `fov_gt.bin`.
+
+```
+python tools/create_waymo_gt_bin.py --version front-view
+```
+
+3. Make changes to config files
 
     I had to make some changes to the config files for pgd due to `CUDA out of memory` error. I also made some changes to the config file for the waymo dataset. I included the config file for the waymo dataset and pgd that worked for me. Changes I made:
 
     mmdetection3d/configs/_base_/datasets/waymoD5-fov-mono3d-3class.py:
     - Changed `backend_args = None` to `backend_args = {}` to fix an error
     - Decreased the batch_size and num_workers to 1 for train_dataloader
-    - Changed the ground truth .bin file name in the waymo_bin_file path in val_evaluator. I am currently using the ground truth .bin file from v1.2 [here](https://console.cloud.google.com/storage/browser/waymo_open_dataset_v_1_2_0/validation/ground_truth_objects)
     - Added vis_backends and visualizer
     - Use mmdet.Resize instead of RandomResize3D
 
@@ -230,9 +236,9 @@ pip uninstall open3d-python
     - Reduced base_batch_size to 8
     - Added `resume = True` to resume training. If you want to resume training from a specific checkpoint, add `load_from = path/to/checkpoint`
 
-3. Copy the compiled `compute_detection_let_metrics_main` file (provided in the shared Google Drive) into `mmdetection3d/mmdet3d/evaluation/functional/waymo_utils/`. The instructions on how to build the binary file are provided below.
+4. Copy the compiled `compute_detection_let_metrics_main` file (provided in the shared Google Drive) into `mmdetection3d/mmdet3d/evaluation/functional/waymo_utils/`. The instructions on how to build the binary file are provided below.
 
-4. Train model
+5. Train model
 ```
 python tools/train.py configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.py
 ```
