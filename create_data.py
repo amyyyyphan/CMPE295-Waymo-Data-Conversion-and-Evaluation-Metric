@@ -8,9 +8,6 @@ sys.path.append('./')
 import ctypes
 libgcc_s = ctypes.CDLL('libgcc_s.so.1')
 
-from PIL import ImageFile
-ImageFile.LOAD_TRUNCATED_IMAGES = True
-
 from tools.dataset_converters import indoor_converter as indoor
 from tools.dataset_converters import kitti_converter as kitti
 from tools.dataset_converters import lyft_converter as lyft_converter
