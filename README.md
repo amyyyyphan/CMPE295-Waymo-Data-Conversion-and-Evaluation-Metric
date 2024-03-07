@@ -269,6 +269,8 @@ wget https://github.com/bazelbuild/bazel/releases/download/5.4.0/bazel-5.4.0-ins
 chmod +x bazel-5.4.0-installer-linux-x86_64.sh
 ./bazel-5.4.0-installer-linux-x86_64.sh --user
 
+cd src
+
 # delete previous bazel outputs and reset internal caches
 bazel clean
 
