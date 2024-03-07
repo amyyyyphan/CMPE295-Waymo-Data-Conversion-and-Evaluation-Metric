@@ -222,7 +222,7 @@ python tools/create_waymo_gt_bin.py --version front-view
 
 3. Make changes to config files
 
-    I had to make some changes to the config files for pgd due to `CUDA out of memory` error. I also made some changes to the config file for the waymo dataset. I included the config file for the waymo dataset and pgd that worked for me. Changes I made:
+    I had to make some changes to the config files for pgd due to `CUDA out of memory` error. I also made some changes to the config file for the waymo dataset. Changes I made:
 
     mmdetection3d/configs/_base_/datasets/waymoD5-fov-mono3d-3class.py:
     - Changed `backend_args = None` to `backend_args = {}` to fix an error
@@ -242,15 +242,6 @@ python tools/create_waymo_gt_bin.py --version front-view
 ```
 python tools/train.py configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.py
 ```
-
-
-# Demo
-You can use the provided sample image data to test the model:
-```
-python demo/mono_det_demo.py demo/data/kitti/000008.png demo/data/kitti/000008.pkl configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.py work_dirs/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d/epoch_24.pth --out-dir demo/
-```
-
-The result will be saved under demo/vis_camera/CAM2
 
 
 # Evaluation
