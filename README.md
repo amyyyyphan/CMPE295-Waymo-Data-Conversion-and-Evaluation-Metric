@@ -152,6 +152,7 @@ You may run into the following errors. Install the necessary libraries and corre
     **Solution**:
     ```
     pip install waymo-open-dataset-tf-2-6-0
+    ```
 
 #### For converting a larger amount of data
 Make sure that the required libraries and versions are installed before using this (look at the section for converting a small amount of data).
