@@ -1,6 +1,8 @@
-# Instructions for converting Waymo dataset into KITTI format
+# Instructions for converting Waymo dataset into KITTI format and computing LET_mAP metrics
 
-## References
+## Instructions to convert Waymo dataset into KITTI format on SJSU HPC system
+
+### References
 The instructions are based on these links:
 
 * [Prerequisites](https://github.com/open-mmlab/mmdetection3d/blob/main/docs/en/get_started.md): Provides the instructions on how to prepare the conda environment
@@ -11,8 +13,12 @@ The instructions are based on these links:
 
 * [College of Engineering HPC](https://www.sjsu.edu/cmpe/resources/hpc.php)
 
+### Clone the MMDetection3D github repository
+```
+git clone https://github.com/open-mmlab/mmdetection3d.git
+```
 
-## Set up conda environment
+### Set up conda environment
 1. Create a conda environment
 ```
 conda create -n open-mmlab python=3.8 -y
@@ -51,8 +57,7 @@ mim install "mmdet3d>=1.1.0"
 pip install waymo-open-dataset-tf-2-6-0
 ```
 
-
-## Download Waymo open dataset v1.4.1
+### Download Waymo open dataset v1.4.1
 Dataset Link: [Waymo Open Dataset](https://waymo.com/open/download/)
 
 Data Split Link: [Data Split Files](https://waymo.com/open/download/)
@@ -70,15 +75,18 @@ mmdetection3d
 │   │   │   ├── validation
 ```
 
-You can download the dataset in HPC using the [gsutil](https://cloud.google.com/storage/docs/gsutil_install). Follow the instructions in the link to install it. Log into the account that has access to the Waymo dataset. Download Waymo open dataset v1.4.1 [here](https://waymo.com/open/download/). When you click on the `Download` button to download multiple `.tfrecord` files, it will give you the gsutil command that you can use to download the files in HPC.
+2. Download Waymo open dataset v1.4.1 [here](https://waymo.com/open/download/)
 
-Download the `.tfrecord` files into the corresponding folders in `data/waymo/waymo_format/`
+    You can download the dataset in HPC using the [gsutil](https://cloud.google.com/storage/docs/gsutil_install). Follow the instructions in the link to install it. Log into the account that has access to the Waymo dataset.
+    
+    When you click on the `Download` button to download multiple `.tfrecord` files from Google Cloud Storaga, it will give you the gsutil command that you can use to download the files in HPC.
 
-2. Download the data split `.txt` files from [here](https://waymo.com/open/download/) and put it into `data/waymo/kitti_format/ImageSets`
+    Download the `.tfrecord` files into the corresponding folders in `data/waymo/waymo_format/`
 
+3. Download the data split `.txt` files from [here](https://waymo.com/open/download/) and put it into `data/waymo/kitti_format/ImageSets`
 
-## Convert the Waymo dataset into KITTI format
-1. Add these lines to create_data.py towards the beginning of the file:
+### Convert the Waymo dataset into KITTI format
+1. Add these lines to `tools/create_data.py` towards the beginning of the file:
 ```
 import sys
 sys.path.append('./')
@@ -87,8 +95,7 @@ import ctypes
 libgcc_s = ctypes.CDLL('libgcc_s.so.1')
 ```
 
-
-### For converting a very small amount of data:
+#### For converting a very small amount of data:
 1. Enable GPU
 ```
 srun -p gpu --gres=gpu -n 1 -N 1 -c 4 --pty /bin/bash
@@ -113,16 +120,6 @@ You may run into the following errors. Install the necessary libraries and corre
 
 2. **Error**:
     ```
-    ImportError: Please run "pip install waymo-open-dataset-tf-2-6-0" >1.4.5 to install the official devkit first.
-    ```
-
-    **Solution**:
-    ```
-    pip install waymo-open-dataset-tf-2-6-0
-    ```
-
-3. **Error**:
-    ```
     ImportError: Numba needs NumPy 1.22 or greater. Got NumPy 1.19.
     ```
 
@@ -131,7 +128,7 @@ You may run into the following errors. Install the necessary libraries and corre
     pip install numpy==1.22
     ```
 
-4. **Error**:
+3. **Error**:
     ```
     TypeError: Descriptors cannot be created directly.
     If this call came from a _pb2.py file, your generated code is out of date and must be regenerated with protoc >= 3.19.0.
@@ -147,11 +144,19 @@ You may run into the following errors. Install the necessary libraries and corre
     pip install protobuf==3.20.1
     ```
 
+4. **Error**:
+    ```
+    ImportError: Please run "pip install waymo-open-dataset-tf-2-6-0" >1.4.5 to install the official devkit first.
+    ```
 
-### For converting a larger amount of data
+    **Solution**:
+    ```
+    pip install waymo-open-dataset-tf-2-6-0
+
+#### For converting a larger amount of data
 Make sure that the required libraries and versions are installed before using this (look at the section for converting a small amount of data).
 
-1. Create a file called conversion.sh in the mmdetection3d directory. Copy this into the file, replacing <email> with your email and <SJSU ID> with your student ID. You may have to make additional changes if you use a different CUDA version or a different name for your conda environment.
+1. Create a file called conversion.sh in the mmdetection3d directory. Copy this into the file, replacing `<email>` with your email and `<SJSU ID>` with your student ID. You may have to make additional changes if you use a different CUDA version or a different name for your conda environment.
 ```
 #!/bin/bash
 #
@@ -184,7 +189,6 @@ sbatch conversion.sh
 
 The system will email you when the job is finished. The logs will be stored in `dtcv-srun.log`
 
-
 ### Resulting `kitti_format` directory
 After the Waymo dataset is converted into KITTI format, there will be a new directory under `mmdetection3d/data/waymo` called `kitti_format`. It should look like this:
 ```
@@ -206,74 +210,75 @@ mmdetection3d
 ```
 
 
-# Instructions for training
-
+## Instructions for training
 1. Uninstall open3d-python to fix `undefined symbol: _Py_ZeroStruct` error
 ```
 pip uninstall open3d-python
 ```
 
 2. Generate ground truth bin file
-Copy the `create_waymo_gt_bin.py` from [here](https://github.com/Tai-Wang/Depth-from-Motion/blob/main/tools/create_waymo_gt_bin.py) into the tools folder under the MMDetection3D directory. Then change the output file name to `fov_gt.bin`.
+
+    Copy the `create_waymo_gt_bin.py` from [here](https://github.com/Tai-Wang/Depth-from-Motion/blob/main/tools/create_waymo_gt_bin.py) into the tools folder under the MMDetection3D directory. Then change the output file name from `cam_gt.bin` to `fov_gt.bin` and execute the following command:
 
 ```
 python tools/create_waymo_gt_bin.py --version front-view
 ```
 
-3. Make changes to config files
+3. Copy the compiled `compute_detection_let_metrics_main` file (provided in the shared Google Drive [here](https://drive.google.com/file/d/1RItAKgl9xOv1Hp_7KrseqfBhtyyp5vVJ/view?usp=sharing)) into `mmdetection3d/mmdet3d/evaluation/functional/waymo_utils/`. The instructions on how to build the binary file are also provided below.
 
-    I had to make some changes to the config files for pgd due to `CUDA out of memory` error. I also made some changes to the config file for the waymo dataset. Changes I made:
-
-    mmdetection3d/configs/_base_/datasets/waymoD5-fov-mono3d-3class.py:
-    - Changed `backend_args = None` to `backend_args = {}` to fix an error
-    - Decreased the batch_size and num_workers to 1 for train_dataloader
-    - Added vis_backends and visualizer
-    - Use mmdet.Resize instead of RandomResize3D
-
-    mmdetection3d/configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.py:
-    - Added default_hooks for logging and saving checkpoints
-    - Changed val_interval to 4
-    - Reduced base_batch_size to 8
-    - Added `resume = True` to resume training. If you want to resume training from a specific checkpoint, add `load_from = path/to/checkpoint`
-
-4. Copy the compiled `compute_detection_let_metrics_main` file (provided in the shared Google Drive) into `mmdetection3d/mmdet3d/evaluation/functional/waymo_utils/`. The instructions on how to build the binary file are provided below.
-
-5. Train model
+4. Train model (change the config file path as needed)
 ```
 python tools/train.py configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.py
 ```
 
 
-# Evaluation
+## Evaluation
+Execute the following command (change the config file and checkpoint path as needed):
 ```
 python tools/test.py configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.py work_dirs/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d/epoch_24.pth --work-dir evaluation_results/ --show-dir evaluation_results_images/ --task mono_det
 ```
 
 The results and images will be saved under evaluation_results
 
-# Instructions to build the binary file `compute_detection_let_metrics_main`
 
-## References
-* [Instructions provided by MMDetection3D for evaluation on Waymo](https://github.com/open-mmlab/mmdetection3d/blob/main/docs/en/advanced_guides/datasets/waymo.md#evaluation)
+## Instructions to build the binary file `compute_detection_let_metrics_main` on SJSU HPC system
+
+### References
+* [Instructions provided by MMDetection3D for evaluation on Waymo and building the binary file](https://github.com/open-mmlab/mmdetection3d/blob/main/docs/en/advanced_guides/datasets/waymo.md#evaluation)
 
 * [Instructions to install Bazel](https://bazel.build/install/ubuntu#binary-installer)
 
+### Instructions
+1. Clone the Waymo Open Dataset github repository into the same directory as mmdetection3d and enter the waymo-od directory
 ```
-# download the code and enter the base directory
 git clone https://github.com/waymo-research/waymo-open-dataset.git waymo-od
 cd waymo-od
 git checkout remotes/origin/master
+```
 
-# install bazel
+2. Install bazel
+```
 wget https://github.com/bazelbuild/bazel/releases/download/5.4.0/bazel-5.4.0-installer-linux-x86_64.sh
 chmod +x bazel-5.4.0-installer-linux-x86_64.sh
 ./bazel-5.4.0-installer-linux-x86_64.sh --user
+```
 
+3. Navigate to the src directory
+```
 cd src
+```
 
-# delete previous bazel outputs and reset internal caches
+4. Delete previous bazel outputs and reset internal caches
+```
 bazel clean
+```
 
+5. Build the binary file
+```
 bazel build waymo_open_dataset/metrics/tools/compute_detection_let_metrics_main
+```
+
+6. Copy the binary file into `mmdetection3d/mmdet3d/evaluation/functional/waymo_utils/`
+```
 cp bazel-bin/waymo_open_dataset/metrics/tools/compute_detection_let_metrics_main ../../mmdetection3d/mmdet3d/evaluation/functional/waymo_utils/
 ```
