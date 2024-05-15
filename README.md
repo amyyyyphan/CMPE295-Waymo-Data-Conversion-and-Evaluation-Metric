@@ -225,10 +225,10 @@ pip uninstall open3d-python
 
 2. Generate ground truth bin file
 
-    Copy the `create_waymo_gt_bin.py` from [here](https://github.com/Tai-Wang/Depth-from-Motion/blob/main/tools/create_waymo_gt_bin.py) into the tools folder under the MMDetection3D directory. Then change the output file name from `cam_gt.bin` to `fov_gt.bin` and execute the following command:
+    Copy the `create_waymo_gt_bin.py` from [here](https://github.com/Tai-Wang/Depth-from-Motion/blob/main/tools/create_waymo_gt_bin.py) into the tools folder under the MMDetection3D directory. Then change the output file name from `cam_gt.bin` to `fov_gt.bin` and execute the following command (change the root path and output directory as needed):
 
 ```
-python tools/create_waymo_gt_bin.py --version front-view
+python tools/create_waymo_gt_bin.py --root-path data/waymo/waymo_format/validation --out-dir data/waymo/waymo_format/ --version front-view
 ```
 
 3. Copy the compiled `compute_detection_let_metrics_main` file (provided in the shared Google Drive [here](https://drive.google.com/file/d/1RItAKgl9xOv1Hp_7KrseqfBhtyyp5vVJ/view?usp=sharing)) into `mmdetection3d/mmdet3d/evaluation/functional/waymo_utils/`. The instructions on how to build the binary file are also provided below.
