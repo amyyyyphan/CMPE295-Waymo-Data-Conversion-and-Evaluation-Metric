@@ -1,5 +1,11 @@
 # Instructions for converting Waymo dataset into KITTI format and computing LET_mAP metrics
 
+## Table of Contents
+1. [Instructions to convert Waymo dataset into KITTI format on SJSU HPC system](https://github.com/amyyyyphan/CMPE295-Waymo-Data-Conversion-and-Evaluation-Metrics?tab=readme-ov-file#instructions-to-convert-waymo-dataset-into-kitti-format-on-sjsu-hpc-system)
+2. [Instructions for generating the ground truth bin file and other preparations for the training phase](https://github.com/amyyyyphan/CMPE295-Waymo-Data-Conversion-and-Evaluation-Metrics?tab=readme-ov-file#instructions-for-training)
+3. [Instructions for evaluation on Waymo](https://github.com/amyyyyphan/CMPE295-Waymo-Data-Conversion-and-Evaluation-Metrics?tab=readme-ov-file#instructions-for-evaluation)
+4. [Instructions to build the binary file compute_detection_let_metrics_main on SJSU HPC system](https://github.com/amyyyyphan/CMPE295-Waymo-Data-Conversion-and-Evaluation-Metrics?tab=readme-ov-file#instructions-to-build-the-binary-file-compute_detection_let_metrics_main-on-sjsu-hpc-system)
+
 ## Instructions to convert Waymo dataset into KITTI format on SJSU HPC system
 
 ### References
@@ -233,7 +239,7 @@ python tools/train.py configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d
 ```
 
 
-## Evaluation
+## Instructions for Evaluation
 Execute the following command (change the config file and checkpoint path as needed):
 ```
 python tools/test.py configs/pgd/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d.py work_dirs/pgd_r101_fpn-head_dcn_16xb3_waymoD5-fov-mono3d/epoch_24.pth --work-dir evaluation_results/ --show-dir evaluation_results_images/ --task mono_det
